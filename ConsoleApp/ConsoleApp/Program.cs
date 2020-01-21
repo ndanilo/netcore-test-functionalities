@@ -1,5 +1,6 @@
 ﻿using System;
 using ConsoleApp.Directives;
+using ConsoleApp.Exceptions;
 
 namespace ConsoleApp
 {
@@ -8,6 +9,7 @@ namespace ConsoleApp
         static void Main(string[] args)
         {
             TestLineDirectives();
+            TestTryCatchAtCustomeException();
 
             Console.WriteLine();
             Console.WriteLine("ended!!!");
@@ -15,8 +17,12 @@ namespace ConsoleApp
 
         static void TestLineDirectives()
         {
-            var lineDirective = new LineDirective();
-            lineDirective.WriteLines();
+            new LineDirective().WriteLines();
+        }
+
+        static void TestTryCatchAtCustomeException()
+        {
+            new CustomException().ThrowException();
         }
     }
 }
