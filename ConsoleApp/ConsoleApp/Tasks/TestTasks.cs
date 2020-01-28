@@ -14,9 +14,11 @@ namespace ConsoleApp.Tasks
             {
                 using (var cancellationTokenSource = new CancellationTokenSource())
                 {
-                    var task1 = CustomTaskAsync("taskA", 500, throwException: false, 20, cancellationTokenSource);
-                    var task2 = CustomTaskAsync("taskB", 500, throwException: true, 15, cancellationTokenSource);
-                    var task3 = CustomTaskAsync("taskC", 500, throwException: false, 10, cancellationTokenSource);
+                    var lockObj = new object();
+
+                    var task1 = CustomTaskAsync("taskA", 500, throwException: false, 20, cancellationTokenSource, lockObj);
+                    var task2 = CustomTaskAsync("taskB", 500, throwException: false, 15, cancellationTokenSource, lockObj);
+                    var task3 = CustomTaskAsync("taskC", 500, throwException: false, 10, cancellationTokenSource, lockObj);
 
                     await Task.WhenAll(task1, task2, task3);
                 }
@@ -27,28 +29,29 @@ namespace ConsoleApp.Tasks
             }
         }
 
-        public async Task CustomTaskAsync(string taskName, int time, bool throwException, int at, CancellationTokenSource cancellationTokenSource = default)
+        public async Task CustomTaskAsync(string taskName, int time, bool throwException, int at, CancellationTokenSource cancellationTokenSource = default, object lockObj = null)
         {
-            int count = 0;
-            await Task.Delay(time);
-
-            while (count <= at)
+            lock (lockObj)
             {
-                cancellationTokenSource
-                    ?.Token.ThrowIfCancellationRequested();
+                int count = 0;
+                Task.Delay(time).Wait();
 
-                await Task.Delay(1000);
-                Console.WriteLine("{0}: interval {1}", taskName, count);
-                count++;
+                while (count <= at)
+                {
+                    cancellationTokenSource
+                        ?.Token.ThrowIfCancellationRequested();
+
+                    Task.Delay(1000).Wait();
+                    Console.WriteLine("{0}: interval {1}", taskName, count);
+                    count++;
+                }
+
+                if (throwException)
+                {
+                    cancellationTokenSource?.Cancel();
+                    throw new Exception($"forced exception was throw at: {taskName}");
+                }
             }
-
-            if (throwException)
-            {
-                cancellationTokenSource?.Cancel();
-                throw new Exception($"forced exception was throw at: {taskName}");
-            }
-
-            return taskName;
         }
     }
 }
