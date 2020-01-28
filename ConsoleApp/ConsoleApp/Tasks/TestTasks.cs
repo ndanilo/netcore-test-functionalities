@@ -27,15 +27,15 @@ namespace ConsoleApp.Tasks
             }
         }
 
-        public async Task CustomTaskAsync(string taskName, int time, bool throwException, int at, CancellationTokenSource cancellationTokenSource)
+        public async Task CustomTaskAsync(string taskName, int time, bool throwException, int at, CancellationTokenSource cancellationTokenSource = default)
         {
             int count = 0;
-            await Task.Delay(time, cancellationTokenSource.Token);
+            await Task.Delay(time);
 
             while (count <= at)
             {
                 cancellationTokenSource
-                    .Token.ThrowIfCancellationRequested();
+                    ?.Token.ThrowIfCancellationRequested();
 
                 await Task.Delay(1000);
                 Console.WriteLine("{0}: interval {1}", taskName, count);
@@ -44,9 +44,11 @@ namespace ConsoleApp.Tasks
 
             if (throwException)
             {
-                cancellationTokenSource.Cancel();
+                cancellationTokenSource?.Cancel();
                 throw new Exception($"forced exception was throw at: {taskName}");
             }
+
+            return taskName;
         }
     }
 }
