@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Threading.Tasks;
 using ConsoleApp.Directives;
 using ConsoleApp.Exceptions;
+using ConsoleApp.Tasks;
 
 namespace ConsoleApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            TestLineDirectives();
-            TestTryCatchAtCustomeException();
+            //TestLineDirectives();
+            //TestTryCatchAtCustomeException();
+
+            await TestTasksExceptions();
 
             Console.WriteLine();
             Console.WriteLine("ended!!!");
@@ -23,6 +27,11 @@ namespace ConsoleApp
         static void TestTryCatchAtCustomeException()
         {
             new CustomException().ThrowException();
+        }
+
+        static async Task TestTasksExceptions()
+        {
+            await new TestTasks().RunTasksWithExceptionAsync();
         }
     }
 }
