@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +34,12 @@ namespace ConsoleApp.Tasks
         {
             await Task.Yield();
 
+            while (!Monitor.TryEnter(lockObj))
+            {
+                await Task.Delay(1000);
+                Console.WriteLine("{0} waiting for access", taskName);
+            }
+
             lock(lockObj)
             {
                 int count = 0;
@@ -47,13 +54,14 @@ namespace ConsoleApp.Tasks
                     Console.WriteLine("{0}: interval {1}", taskName, count);
                     count++;
                 }
-
                 if (throwException)
                 {
                     cancellationTokenSource?.Cancel();
                     throw new Exception($"forced exception was throw at: {taskName}");
                 }
             }
+
+            Monitor.Exit(lockObj);
         }
     }
 }
