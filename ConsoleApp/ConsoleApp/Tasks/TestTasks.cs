@@ -31,10 +31,12 @@ namespace ConsoleApp.Tasks
 
         public async Task CustomTaskAsync(string taskName, int time, bool throwException, int at, CancellationTokenSource cancellationTokenSource = default, object lockObj = null)
         {
-            lock (lockObj)
+            await Task.Yield();
+
+            lock(lockObj)
             {
                 int count = 0;
-                Task.Delay(time).Wait();
+                Task.Delay(1000).Wait();
 
                 while (count <= at)
                 {
