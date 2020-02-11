@@ -13,8 +13,9 @@ namespace ConsoleApp
             //TestLineDirectives();
             //TestTryCatchAtCustomeException();
             //await TestTasksExceptions();
+            //await TestMultithread();
 
-            await TestMultithread();
+            await TestNestedTask();
 
             Console.WriteLine();
             Console.WriteLine("ended!!!");
@@ -38,6 +39,11 @@ namespace ConsoleApp
         static async Task TestMultithread()
         {
             await new TestMultithread().RunMultithreadTasksAsync();
+        }
+
+        static async Task TestNestedTask()
+        {
+            await new TestNestedTask().CallTestClassAsync();
         }
     }
 }
