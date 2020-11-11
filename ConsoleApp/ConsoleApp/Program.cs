@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using ConsoleApp.Directives;
 using ConsoleApp.Exceptions;
@@ -15,7 +16,9 @@ namespace ConsoleApp
             //await TestTasksExceptions();
             //await TestMultithread();
 
-            await TestNestedTask();
+            //await TestNestedTask();
+
+            await TestGenerateCrc16Code();
 
             Console.WriteLine();
             Console.WriteLine("ended!!!");
@@ -44,6 +47,22 @@ namespace ConsoleApp
         static async Task TestNestedTask()
         {
             await new TestNestedTask().CallTestClassAsync();
+        }
+
+        static async Task TestGenerateCrc16Code()
+        {
+            var code = "00020101021226850014br.gov.bcb.pix2563pix.santander.com.br/qr/v1/1edc73e3-cb6b-420e-a43a-00cfdde3288b520400005303986540520.005802BR5925DANILO NOVAIS DE OLIVEIRA6009SAO PAULO62070503***6304";
+            var crcGenerator = new Crc16Ccitt(InitialCrcValue.NonZero1);
+
+            var codeArray = Encoding.ASCII.GetBytes(code);
+            var result = crcGenerator.ComputeChecksumBytes(codeArray);
+
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(result);
+
+            var strResult = BitConverter.ToString(result);
+
+            await Task.CompletedTask;
         }
     }
 }
